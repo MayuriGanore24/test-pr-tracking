@@ -1,0 +1,119 @@
+Let’s break it down step by step! I’ll guide you through creating a repo in your official account (let’s call it stacy), having you push code from your personal account (MayuriGanore), and collecting PR data — including user info and region details — using the GitHub API. 🚀
+
+🟢 Step 1: Create a Repository (on official account stacy)
+Log in to your GitHub account (stacy).
+Click the + icon (top right) → New repository.
+Name the repository: test-pr-tracking.
+Add a README file and click Create repository.
+🟡 Step 2: Fork the Repository (from MayuriGanore account)
+Log in to your personal account (MayuriGanore).
+Navigate to: https://github.com/stacy/test-pr-tracking.
+Click Fork (top right). This copies the repo to your personal account.
+🟠 Step 3: Clone and Make Changes (from MayuriGanore)
+Clone the forked repo to your local machine:
+bash
+Copy
+Edit
+git clone https://github.com/MayuriGanore/test-pr-tracking.git
+cd test-pr-tracking
+Create a new branch:
+bash
+Copy
+Edit
+git checkout -b feature-1
+Add a new file (e.g., hello.js):
+bash
+Copy
+Edit
+echo "console.log('Hello, PR Tracking!');" > hello.js
+Push changes to your fork:
+bash
+Copy
+Edit
+git add .
+git commit -m "Add hello.js"
+git push origin feature-1
+🟣 Step 4: Create a Pull Request (PR) (from MayuriGanore)
+Go to your fork (MayuriGanore/test-pr-tracking).
+Click Compare & pull request.
+Add a title and description → Click Create pull request.
+Now, the PR appears in the stacy/test-pr-tracking repository!
+
+🟤 Step 5: Collect PR Data Using GitHub API
+Now, let’s collect PR data with the GitHub API! 🎯
+
+You’ll need a GitHub Personal Access Token (PAT):
+
+Go to Settings → Developer settings → Personal Access Tokens.
+Generate a new token with repo and user permissions.
+Copy the token (you’ll only see it once).
+Next, use this Python script to fetch the PR data:
+
+python
+Copy
+Edit
+import requests
+
+# GitHub API credentials
+TOKEN = "your_github_token_here"
+OWNER = "stacy"
+REPO = "test-pr-tracking"
+
+# GitHub API headers
+headers = {
+    "Authorization": f"token {TOKEN}",
+    "Accept": "application/vnd.github.v3+json"
+}
+
+# Fetch PRs
+pr_url = f"https://api.github.com/repos/{OWNER}/{REPO}/pulls"
+response = requests.get(pr_url, headers=headers)
+prs = response.json()
+
+# Loop through PRs and get user data
+for pr in prs:
+    user_url = pr['user']['url']
+    user_response = requests.get(user_url, headers=headers)
+    user_data = user_response.json()
+    
+    print(f"PR Title: {pr['title']}")
+    print(f"Username: {pr['user']['login']}")
+    print(f"Location: {user_data.get('location', 'Not provided')}")
+    print(f"Email: {user_data.get('email', 'Not public')}")
+    print(f"Bio: {user_data.get('bio', 'No bio')}")
+    print(f"GitHub URL: {user_data['html_url']}")
+    print(f"Created At: {pr['created_at']}")
+    print(f"Changed Files URL: {pr['url']}/files")
+    print("-" * 40)
+🔧 Run the script:
+
+bash
+Copy
+Edit
+python track_pr.py
+🟩 Step 6: Output Example
+yaml
+Copy
+Edit
+PR Title: Add hello.js
+Username: MayuriGanore
+Location: Pune, India
+Email: Not public
+Bio: Developer exploring full-stack and machine learning
+GitHub URL: https://github.com/MayuriGanore
+Created At: 2025-02-28T10:30:00Z
+Changed Files URL: https://api.github.com/repos/stacy/test-pr-tracking/pulls/1/files
+----------------------------------------
+🔐 Step 7: Handling Suspicious Activity (Hackers)
+If someone suspicious sends a PR, you can:
+
+Check IP addresses: Add a webhook to capture request headers and log IPs.
+Scan for malicious code: Use tools like CodeQL to scan PR files for vulnerabilities.
+Block suspicious users: Use the GitHub API to block or report users.
+For extra security, you could build a FastAPI server that:
+
+Receives webhook events for PRs.
+Logs contributor details and IPs.
+Checks IPs against threat databases like AbuseIPDB.
+Auto-comments on PRs if anything looks risky.
+Would you like me to help you build that system or refine the API logic? Let me know — we can take this to the next level! 🚀✨
